@@ -21,7 +21,6 @@ SOURCES += main.cpp \
     thresholdvideowindow.cpp \
     extractvideowindow.cpp \
     sound.cpp \
-    audioanalysiswindow.cpp \
     controller.cpp \
     gestionvideo.cpp
 
@@ -40,7 +39,6 @@ HEADERS += \
     thresholdvideowindow.h \
     extractvideowindow.h \
     sound.h \
-    audioanalysiswindow.h \
     controller.h \
     gestionvideo.h
 

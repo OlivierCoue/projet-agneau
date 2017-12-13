@@ -29,7 +29,6 @@ class Sound{
         ~Sound();
         void extractSound(QString filename) ;
         void extractWaveform(QString filename) ;
-        bool truncateSound(QString filename, double start);
         static void audio_encode(const char *filename);
         void setMedia(QString filename) ;
         void play() ;
@@ -49,8 +48,6 @@ class Sound{
         QString getResultSoundFile_2() ;
         QString getResultSoundFile_3() ;
         QString getResultSoundFile_4() ;
-
-        void runAnalysis(QString currentPath) ;
 };
 
 #endif // SOUND_H

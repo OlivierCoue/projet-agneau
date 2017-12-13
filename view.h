@@ -8,7 +8,6 @@
 #include "objecthisrogramwindow.h"
 #include "thresholdvideowindow.h"
 #include "extractvideowindow.h"
-#include "audioanalysiswindow.h"
 
 class View{
     private:
@@ -18,7 +17,6 @@ class View{
         ThresholdVideoWindow* thresholdVideoWindow ;
         QColorDialog* qColorDialog ;
         ExtractVideoWindow* extractVideoWindow ;
-        AudioAnalysisWindow* audioAnalysisWindow ;
 
         std::vector<QWidget*> views ;
 
@@ -31,7 +29,6 @@ class View{
         QWidget* getThresholdVideoWindow() ;
         QWidget* getQColorDialog() ;
         QWidget* getExtractVideoWindow() ;
-        QWidget* getAudioAnalysisWindow() ;
 };
 
 #endif // VIEW_H

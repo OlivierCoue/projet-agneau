@@ -30,7 +30,6 @@ Controller::Controller(Model *model, View *view){
     qWidgetVideoThresholdWindow = view->getThresholdVideoWindow() ;
     qWidgetColorSelection = view->getQColorDialog() ;
     qWidgetExtractVideoWindow = view->getExtractVideoWindow() ;
-    qWidgetAudioAnalysisWindow = view->getAudioAnalysisWindow() ;
 
 
     ((MainWindow*)qWidgetMainWindow)->getQLabelVideoDisplay()->setMouseTracking(true);
@@ -42,7 +41,6 @@ Controller::Controller(Model *model, View *view){
     QObject::connect( ((MainWindow*)qWidgetMainWindow)->getQActionOpenThresholdVideo(), SIGNAL(triggered(bool)), this, SLOT(displayVideoThreshold()) );
     QObject::connect( ((MainWindow*)qWidgetMainWindow)->getQActionOpenColorSelection(), SIGNAL(triggered(bool)), this, SLOT(displayColorSelection()) ) ;
     QObject::connect( ((MainWindow*)qWidgetMainWindow)->getQActionExtractVideo(), SIGNAL(triggered(bool)), this, SLOT(displayExtractVideo()) ) ;
-    QObject::connect( ((MainWindow*)qWidgetMainWindow)->getQActionLaunchAudioAnalysis(), SIGNAL(triggered(bool)), this, SLOT(displayLaunchAudioAnalysis()) ) ;
 
     QObject::connect( ((MainWindow*)qWidgetMainWindow)->getQLabelVideoDisplay(), SIGNAL(mouseMoved(int,int)), this, SLOT(mouseMoving(int,int))) ;
     QObject::connect( ((MainWindow*)qWidgetMainWindow)->getQLabelVideoDisplay(), SIGNAL(mousePressed(int,int)), this, SLOT(mousePressed(int,int))) ;
@@ -52,8 +50,6 @@ Controller::Controller(Model *model, View *view){
     QObject::connect( ((MainWindow*)qWidgetMainWindow)->getQSlider(), SIGNAL(sliderMoved(int)), this, SLOT(sliderVideoMoved(int))) ;
     QObject::connect( ((MainWindow*)qWidgetMainWindow)->getQSlider(), SIGNAL(sliderPressed()), this, SLOT(sliderVideoPressed()) ) ;
     QObject::connect( ((MainWindow*)qWidgetMainWindow)->getQSlider(), SIGNAL(sliderReleased()), this, SLOT(sliderVideoReleased()) ) ;
-
-    QObject::connect( ((MainWindow*)qWidgetMainWindow)->getQPushButtonTruncateSound(), SIGNAL(clicked(bool)), this, SLOT(truncateSound()) );
 
     QObject::connect( ((MainWindow*)qWidgetMainWindow)->getQPushButtonFastBackward(), SIGNAL(clicked(bool)), this, SLOT(fastBackward()) );
     QObject::connect( ((MainWindow*)qWidgetMainWindow)->getQPushButtonFastForward(), SIGNAL(clicked(bool)), this, SLOT(fastForward()) );
@@ -92,14 +88,6 @@ Controller::Controller(Model *model, View *view){
     QObject::connect( model->getVideo(), SIGNAL(processedImage(QImage, int, QString)), this, SLOT(updateVideo(QImage, int, QString)));
     QObject::connect( model->getVideo(), SIGNAL(processedThresholdImage(QImage)), this, SLOT(updateThresholdVideo(QImage)) );
 
-
-    QObject::connect( ((AudioAnalysisWindow*)qWidgetAudioAnalysisWindow)->getQPushButtonClass_0(), SIGNAL(clicked(bool)), this, SLOT(browseFileForClass_0()) ) ;
-    QObject::connect( ((AudioAnalysisWindow*)qWidgetAudioAnalysisWindow)->getQPushButtonClass_1(), SIGNAL(clicked(bool)), this, SLOT(browseFileForClass_1()) ) ;
-    QObject::connect( ((AudioAnalysisWindow*)qWidgetAudioAnalysisWindow)->getQPushButtonClass_2(), SIGNAL(clicked(bool)), this, SLOT(browseFileForClass_2()) ) ;
-    QObject::connect( ((AudioAnalysisWindow*)qWidgetAudioAnalysisWindow)->getQPushButtonClass_3(), SIGNAL(clicked(bool)), this, SLOT(browseFileForClass_3()) ) ;
-    QObject::connect( ((AudioAnalysisWindow*)qWidgetAudioAnalysisWindow)->getQPushButtonClass_4(), SIGNAL(clicked(bool)), this, SLOT(browseFileForClass_4()) ) ;
-    QObject::connect( ((AudioAnalysisWindow*)qWidgetAudioAnalysisWindow)->getQComboBox(), SIGNAL(currentIndexChanged(int)), this, SLOT(nbClassChosen(int)) ) ;
-    QObject::connect( ((AudioAnalysisWindow*)qWidgetAudioAnalysisWindow)->getQPushButtonAnalyse(), SIGNAL(clicked(bool)), this, SLOT(launchAnalysis()) ) ;
     model->getSound()->setSoundFileToCompare("");
 }
 
@@ -122,7 +110,6 @@ void Controller::displayExtractVideo(){
     ((ExtractVideoWindow*)qWidgetExtractVideoWindow)->setQLabel(QString::fromStdString(s.str()));
     ((ExtractVideoWindow*)qWidgetExtractVideoWindow)->show();
 }
-void Controller::displayLaunchAudioAnalysis(){ ((AudioAnalysisWindow*)qWidgetAudioAnalysisWindow)->show(); }
 
 void Controller::openVideoFile(){
     model->getVideo()->stop();
@@ -167,7 +154,7 @@ void Controller::openVideoFile(){
             msgBox.exec();
         }
 
-        ((MainWindow*)qWidgetMainWindow)->getQSlider()->setStyleSheet("background-color :white; background-image: url("+folderName + filename+".png); ");
+        ((MainWindow*)qWidgetMainWindow)->getQSlider()->setStyleSheet("margin-left: -70px; background-color :white; background-image: url("+folderName + filename+".png); ");
         model->getSound()->setMedia(folderName + filename+".wav");
         model->getSound()->setSoundFileToCompare(folderName + filename+".wav");
 
@@ -312,21 +299,6 @@ void Controller::sliderVideoReleased()
    //s << nbSeconds/60 << ":" << nbSeconds%60 ;
    ((MainWindow*)qWidgetMainWindow)->setPlayPauseButton("Play");
    ((MainWindow*)qWidgetMainWindow)->setQLabelCurrentTime(QString::fromStdString(s.str()));
-}
-
-void Controller::truncateSound()
-{
-    double newStart = positionSlide*1. / ((MainWindow*)qWidgetMainWindow)->getQSlider()->maximum();
-    model->getSound()->truncateSound(folderName + filename, newStart);
-
-    //On charge dans l'application les nouveaux fichiers wav et waveform png
-    ((MainWindow*)qWidgetMainWindow)->getQSlider()->setStyleSheet("background-color :white; background-image: url("+folderName + filename+".png); ");
-    model->getSound()->setMedia(folderName + filename+".wav");
-    model->getSound()->setSoundFileToCompare(folderName + filename+".wav");
-
-    QMessageBox msgBox;
-    msgBox.setText("Synchronisation terminée");
-    msgBox.exec();
 }
 
 void Controller::beginningVideo(){
@@ -701,103 +673,6 @@ void Controller::setEndVideoExtraction(){
 void Controller::extractVideo(){
     model->getVideo()->extractVideo(folderName + filename);
     ((ExtractVideoWindow*)qWidgetExtractVideoWindow)->close() ;
-}
-
-void Controller::nbClassChosen(int nbClass){
-    switch(nbClass){
-    case 0:
-        ((AudioAnalysisWindow*)qWidgetAudioAnalysisWindow)->enableClass(false, false, false, false);
-        ((AudioAnalysisWindow*)qWidgetAudioAnalysisWindow)->getQTextEditClass_1()->setText("") ;
-        ((AudioAnalysisWindow*)qWidgetAudioAnalysisWindow)->getQTextEditClass_2()->setText("") ;
-        ((AudioAnalysisWindow*)qWidgetAudioAnalysisWindow)->getQTextEditClass_3()->setText("") ;
-        ((AudioAnalysisWindow*)qWidgetAudioAnalysisWindow)->getQTextEditClass_4()->setText("") ;
-
-        ((AudioAnalysisWindow*)qWidgetAudioAnalysisWindow)->getQTextEditResultClass_1()->setText("");
-        ((AudioAnalysisWindow*)qWidgetAudioAnalysisWindow)->getQTextEditResultClass_2()->setText("");
-        ((AudioAnalysisWindow*)qWidgetAudioAnalysisWindow)->getQTextEditResultClass_3()->setText("");
-        ((AudioAnalysisWindow*)qWidgetAudioAnalysisWindow)->getQTextEditResultClass_4()->setText("");
-        break ;
-    case 1:
-        ((AudioAnalysisWindow*)qWidgetAudioAnalysisWindow)->enableClass(true, false, false, false);
-        ((AudioAnalysisWindow*)qWidgetAudioAnalysisWindow)->getQTextEditClass_2()->setText("") ;
-        ((AudioAnalysisWindow*)qWidgetAudioAnalysisWindow)->getQTextEditClass_3()->setText("") ;
-        ((AudioAnalysisWindow*)qWidgetAudioAnalysisWindow)->getQTextEditClass_4()->setText("") ;
-
-        ((AudioAnalysisWindow*)qWidgetAudioAnalysisWindow)->getQTextEditResultClass_2()->setText("");
-        ((AudioAnalysisWindow*)qWidgetAudioAnalysisWindow)->getQTextEditResultClass_3()->setText("");
-        ((AudioAnalysisWindow*)qWidgetAudioAnalysisWindow)->getQTextEditResultClass_4()->setText("");
-        break ;
-    case 2:
-        ((AudioAnalysisWindow*)qWidgetAudioAnalysisWindow)->enableClass(true, true, false, false);
-        ((AudioAnalysisWindow*)qWidgetAudioAnalysisWindow)->getQTextEditClass_3()->setText("") ;
-        ((AudioAnalysisWindow*)qWidgetAudioAnalysisWindow)->getQTextEditClass_4()->setText("") ;
-
-        ((AudioAnalysisWindow*)qWidgetAudioAnalysisWindow)->getQTextEditResultClass_3()->setText("");
-        ((AudioAnalysisWindow*)qWidgetAudioAnalysisWindow)->getQTextEditResultClass_4()->setText("");
-        break ;
-    case 3:
-        ((AudioAnalysisWindow*)qWidgetAudioAnalysisWindow)->enableClass(true, true, true, false);
-        ((AudioAnalysisWindow*)qWidgetAudioAnalysisWindow)->getQTextEditClass_4()->setText("") ;
-        ((AudioAnalysisWindow*)qWidgetAudioAnalysisWindow)->getQTextEditResultClass_4()->setText("");
-        break ;
-    case 4:
-        ((AudioAnalysisWindow*)qWidgetAudioAnalysisWindow)->enableClass(true, true, true, true);
-        break ;
-    }
-}
-
-void Controller::browseFileForClass_0(){
-    QString filename = QFileDialog::getOpenFileName(((MainWindow*)qWidgetMainWindow), "Ouvrir un fichier son", ".", "Sound Files (*wav)") ;
-    if(!filename.isEmpty() && ((AudioAnalysisWindow*)qWidgetAudioAnalysisWindow)->getQTextEditClass_0()->isEnabled()){
-        ((AudioAnalysisWindow*)qWidgetAudioAnalysisWindow)->getQTextEditClass_0()->setText(filename);
-        ((AudioAnalysisWindow*)qWidgetAudioAnalysisWindow)->getQTextEditResultClass_0()->setText("");
-    }
-}
-
-void Controller::browseFileForClass_1(){
-    QString filename = QFileDialog::getOpenFileName(((MainWindow*)qWidgetMainWindow), "Ouvrir un fichier son", ".", "Sound Files (*wav)") ;
-    if(!filename.isEmpty() && ((AudioAnalysisWindow*)qWidgetAudioAnalysisWindow)->getQTextEditClass_1()->isEnabled()){
-        ((AudioAnalysisWindow*)qWidgetAudioAnalysisWindow)->getQTextEditClass_1()->setText(filename);
-        ((AudioAnalysisWindow*)qWidgetAudioAnalysisWindow)->getQTextEditResultClass_1()->setText("");
-    }
-}
-
-void Controller::browseFileForClass_2(){
-    QString filename = QFileDialog::getOpenFileName(((MainWindow*)qWidgetMainWindow), "Ouvrir un fichier son", ".", "Sound Files (*wav)") ;
-    if(!filename.isEmpty() && ((AudioAnalysisWindow*)qWidgetAudioAnalysisWindow)->getQTextEditClass_2()->isEnabled()){
-        ((AudioAnalysisWindow*)qWidgetAudioAnalysisWindow)->getQTextEditClass_2()->setText(filename);
-        ((AudioAnalysisWindow*)qWidgetAudioAnalysisWindow)->getQTextEditResultClass_2()->setText("");
-    }
-}
-
-void Controller::browseFileForClass_3(){
-    QString filename = QFileDialog::getOpenFileName(((MainWindow*)qWidgetMainWindow), "Ouvrir un fichier son", ".", "Sound Files (*wav)") ;
-    if(!filename.isEmpty() && ((AudioAnalysisWindow*)qWidgetAudioAnalysisWindow)->getQTextEditClass_3()->isEnabled()){
-        ((AudioAnalysisWindow*)qWidgetAudioAnalysisWindow)->getQTextEditClass_3()->setText(filename);
-        ((AudioAnalysisWindow*)qWidgetAudioAnalysisWindow)->getQTextEditResultClass_3()->setText("");
-    }
-}
-
-void Controller::browseFileForClass_4(){
-    QString filename = QFileDialog::getOpenFileName(((MainWindow*)qWidgetMainWindow), "Ouvrir un fichier son", ".", "Sound Files (*wav)") ;
-    if(!filename.isEmpty() && ((AudioAnalysisWindow*)qWidgetAudioAnalysisWindow)->getQTextEditClass_4()->isEnabled()){
-        ((AudioAnalysisWindow*)qWidgetAudioAnalysisWindow)->getQTextEditClass_4()->setText(filename);
-        ((AudioAnalysisWindow*)qWidgetAudioAnalysisWindow)->getQTextEditResultClass_4()->setText("");
-    }
-}
-
-void Controller::launchAnalysis(){
-    model->getSound()->setSoundFileClass_0( ((AudioAnalysisWindow*)qWidgetAudioAnalysisWindow)->getQTextEditClass_0()->toPlainText() );
-    model->getSound()->setSoundFileClass_1( ((AudioAnalysisWindow*)qWidgetAudioAnalysisWindow)->getQTextEditClass_1()->toPlainText() );
-    model->getSound()->setSoundFileClass_2( ((AudioAnalysisWindow*)qWidgetAudioAnalysisWindow)->getQTextEditClass_2()->toPlainText() );
-    model->getSound()->setSoundFileClass_3( ((AudioAnalysisWindow*)qWidgetAudioAnalysisWindow)->getQTextEditClass_3()->toPlainText() );
-    model->getSound()->setSoundFileClass_4( ((AudioAnalysisWindow*)qWidgetAudioAnalysisWindow)->getQTextEditClass_4()->toPlainText() );
-    model->getSound()->runAnalysis(currentPath);
-    ((AudioAnalysisWindow*)qWidgetAudioAnalysisWindow)->getQTextEditResultClass_0()->setText( model->getSound()->getResultSoundFile_0() );
-    ((AudioAnalysisWindow*)qWidgetAudioAnalysisWindow)->getQTextEditResultClass_1()->setText( model->getSound()->getResultSoundFile_1() );
-    ((AudioAnalysisWindow*)qWidgetAudioAnalysisWindow)->getQTextEditResultClass_2()->setText( model->getSound()->getResultSoundFile_2() );
-    ((AudioAnalysisWindow*)qWidgetAudioAnalysisWindow)->getQTextEditResultClass_3()->setText( model->getSound()->getResultSoundFile_3() );
-    ((AudioAnalysisWindow*)qWidgetAudioAnalysisWindow)->getQTextEditResultClass_4()->setText( model->getSound()->getResultSoundFile_4() );
 }
 
 Controller::~Controller(){

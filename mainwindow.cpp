@@ -37,9 +37,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent){
 
     qMenueTools = menuBar()->addMenu("&Outil") ;
     qActionExtractVideo = new QAction("&Extraire une vidéo", this) ;
-    qActionLaunchAudioAnalysis = new QAction("&Analyse audio", this) ;
     qMenueTools->addAction(qActionExtractVideo) ;
-    qMenueTools->addAction(qActionLaunchAudioAnalysis) ;
     qActionExtractVideo->setDisabled(true);
 
     qVBoxLayout = new QVBoxLayout ;
@@ -67,9 +65,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent){
     qSlider->setFixedHeight(120);
     qSlider->setStyleSheet("background-color :white; "
                            "QSlider::groove::Horizontal{visibility:hidden;}");
-
-    qHBoxLayoutTruncateSound = new QHBoxLayout ;
-    qPushButtonTruncateSound = new QPushButton("Synchroniser l'audio et la vidéo") ;
 
     qPushButtonFastBackward = new QPushButton("<<") ;
     qPushButtonFastForward = new QPushButton(">>") ;
@@ -135,10 +130,6 @@ void MainWindow::init(){
     qHBoxLayoutSlider->addWidget(qLabelTimestampFinish);
     qVBoxLayout->addLayout(qHBoxLayoutSlider) ;
 
-    qPushButtonTruncateSound->setEnabled(false);
-    qHBoxLayoutTruncateSound->addWidget(qPushButtonTruncateSound);
-    qVBoxLayout->addLayout(qHBoxLayoutTruncateSound) ;
-
     qHBoxLayoutExtraction->addWidget(qPushButtonStartVideoToExtract);
     qHBoxLayoutExtraction->addWidget(qLabelStartVideoToExtract);
     qHBoxLayoutExtraction->addWidget(qLabelEndVideoToExtract);
@@ -178,7 +169,6 @@ QAction* MainWindow::getQActionAlgorithmColors(){return qActionAlgorithmColors ;
 QAction* MainWindow::getQActionOpenThresholdVideo(){return qActionOpenThresholdVideo ;}
 QAction* MainWindow::getQActionOpenColorSelection(){return qActionOpenColorSelection ;}
 QAction* MainWindow::getQActionExtractVideo(){return qActionExtractVideo ;}
-QAction* MainWindow::getQActionLaunchAudioAnalysis(){return qActionLaunchAudioAnalysis ; }
 
 QPushButton* MainWindow::getQPushButtonPlayPause(){return qPushButtonPlayPause ;}
 QPushButton* MainWindow::getQPushButtonFastForward(){return qPushButtonFastForward;}
@@ -201,7 +191,6 @@ QGroupBox* MainWindow::getQGroupBox(){ return qGroupBox;}
 
 QLabelVideoDisplay *MainWindow::getQLabelVideoDisplay(){return qLabelVideoDisplay ; }
 QSlider* MainWindow::getQSlider(){return qSlider ;}
-QPushButton* MainWindow::getQPushButtonTruncateSound(){return qPushButtonTruncateSound ;}
 QListWidget* MainWindow::getQListWidget(){return qListWidgetCoordinates;}
 
 QLabel* MainWindow::getQLabelStartVideoToExtract(){return qLabelStartVideoToExtract ;}
@@ -219,7 +208,6 @@ void MainWindow::enableControlButtons(bool b){
     qPushButtonBackward->setEnabled(b);
     qPushButtonStart->setEnabled(b);
     qSlider->setEnabled(b);
-    qPushButtonTruncateSound->setEnabled(b);
     qPushButtonStartVideoToExtract->setEnabled(b);
     qPushButtonEndVideoToExtract->setEnabled(b);
 }
@@ -259,9 +247,6 @@ MainWindow::~MainWindow(){
     delete qSlider;
     delete qHBoxLayoutSlider;
 
-    delete qPushButtonTruncateSound;
-    delete qHBoxLayoutTruncateSound;
-
     delete qLabelTrajectory;
     delete qCheckBox;
     delete qHBoxLayoutTrajectory;
@@ -282,7 +267,6 @@ MainWindow::~MainWindow(){
     delete qHBoxLayoutVideo;
     delete qVBoxLayout;
 
-    delete qActionLaunchAudioAnalysis;
     delete qActionExtractVideo;
     delete qActionOpenColorSelection;
     delete qActionOpenThresholdVideo;

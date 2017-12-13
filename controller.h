@@ -19,7 +19,6 @@ class Controller : QObject{
         QWidget* qWidgetVideoThresholdWindow ;
         QWidget* qWidgetColorSelection ;
         QWidget* qWidgetExtractVideoWindow ;
-        QWidget* qWidgetAudioAnalysisWindow ;
 
         Model* model ;
         View* view ;
@@ -48,7 +47,6 @@ class Controller : QObject{
         void displayVideoThreshold() ;
         void displayColorSelection() ;
         void displayExtractVideo() ;
-        void displayLaunchAudioAnalysis() ;
         void openVideoFile() ;
 
 
@@ -87,21 +85,9 @@ class Controller : QObject{
         void sliderMinValueMoved(int position) ;
         void sliderMaxValueMoved(int position) ;
 
-        void truncateSound();
-
         void extractVideo() ;
         void setStartVideoExtraction() ;
         void setEndVideoExtraction() ;
-
-        void nbClassChosen(int nbClass) ;
-        void browseFileForClass_0() ;
-        void browseFileForClass_1() ;
-        void browseFileForClass_2() ;
-        void browseFileForClass_3() ;
-        void browseFileForClass_4() ;
-        void launchAnalysis() ;
-
-
 
 
 };

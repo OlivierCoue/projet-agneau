@@ -67,7 +67,6 @@ class MainWindow : public QMainWindow{
         QAction* qActionOpenThresholdVideo ;
         QAction* qActionOpenColorSelection ;
         QAction* qActionExtractVideo ;
-        QAction* qActionLaunchAudioAnalysis ;
 
         QLabelVideoDisplay* qLabelVideoDisplay ;
 
@@ -91,8 +90,6 @@ class MainWindow : public QMainWindow{
         QLabel* qLabelTimestampCurrent ;
         QLabel* qLabelTimestampFinish ;
 
-        QPushButton* qPushButtonTruncateSound ;
-
         QVBoxLayout* qVBoxLayout ;
         QVBoxLayout* qVBoxLayoutCoordinates ;
 
@@ -101,7 +98,6 @@ class MainWindow : public QMainWindow{
         QHBoxLayout* qHBoxLayoutVideoControl ;
         QHBoxLayout* qHboxLayoutLoadSaveButton ;
         QHBoxLayout* qHBoxLayoutSlider ;
-        QHBoxLayout* qHBoxLayoutTruncateSound ;
         QHBoxLayout* qHBoxLayoutExtraction ;
         QHBoxLayout* qHBoxLayoutTrajectory ;
 
@@ -128,7 +124,6 @@ class MainWindow : public QMainWindow{
         QAction* getQActionOpenThresholdVideo() ;
         QAction* getQActionOpenColorSelection() ;
         QAction* getQActionExtractVideo() ;
-        QAction* getQActionLaunchAudioAnalysis() ;
 
         QPushButton* getQPushButtonPlayPause() ;
         QPushButton* getQPushButtonFastForward() ;
@@ -151,7 +146,6 @@ class MainWindow : public QMainWindow{
 
         QLabelVideoDisplay *getQLabelVideoDisplay() ;
         QSlider* getQSlider() ;
-        QPushButton* getQPushButtonTruncateSound() ;
         QListWidget* getQListWidget() ;
         QLabel* getQLabelStartVideoToExtract() ;
         QLabel* getQLabelEndVideoToExtract() ;
