@@ -22,7 +22,8 @@ SOURCES += main.cpp \
     extractvideowindow.cpp \
     sound.cpp \
     controller.cpp \
-    gestionvideo.cpp
+    gestionvideo.cpp \
+    QCustomPlot/qcustomplot.cpp
 
 HEADERS += \
     view.h \
@@ -40,7 +41,8 @@ HEADERS += \
     extractvideowindow.h \
     sound.h \
     controller.h \
-    gestionvideo.h
+    gestionvideo.h \
+    QCustomPlot/qcustomplot.h
 
 #si opencv non trouvé après installation eéxécuter la commande suivante en remplaçant le chemin par le votre : setx -m OPENCV_DIR C:\opencv\build\x86\vc12
 INCLUDEPATH += C:\\opencv\\build/include \
