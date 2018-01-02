@@ -14,6 +14,7 @@
 #include <QStatusBar>
 #include <QCheckBox>
 #include <QMouseEvent>
+#include "QCustomPlot/qcustomplot.h"
 
 class QLabelVideoDisplay : public QLabel{
     Q_OBJECT
@@ -90,6 +91,10 @@ class MainWindow : public QMainWindow{
         QLabel* qLabelTimestampCurrent ;
         QLabel* qLabelTimestampFinish ;
 
+        // sound signal plot
+        QCustomPlot* qCPsoundSignal;
+        QHBoxLayout* qHBoxLayoutSound;
+
         QVBoxLayout* qVBoxLayout ;
         QVBoxLayout* qVBoxLayoutCoordinates ;
 
@@ -150,6 +155,8 @@ class MainWindow : public QMainWindow{
         QLabel* getQLabelStartVideoToExtract() ;
         QLabel* getQLabelEndVideoToExtract() ;
 
+        QCustomPlot* getQCPsoundSignal();
+
         void setPlayPauseButton(QString qs) ;
         void enableControlButtons(bool b) ;
         void updateSatusBar(QString msg) ;
@@ -158,7 +165,6 @@ class MainWindow : public QMainWindow{
         void setQLabelFinishTime(QString q) ;
         void setQLabelStartVideoToExtract(QString q) ;
         void setQLabelEndVideoToExtract(QString q) ;
-
 
         ~MainWindow() ;
 

@@ -134,29 +134,31 @@ void Controller::openVideoFile(){
         list = filename.split(".") ;
         filename = list.at(0).toStdString().c_str() ;
 
-
+        // update sound signal
         if(!QFile(folderName + filename+".wav").exists())
             msgBox.setText("in extract wav file!");
             msgBox.exec() ;
             model->getSound()->extractSound(folderName + filename);
         try {
-            if(!QFile(folderName + filename+".png").exists() && QFile(folderName + filename+".wav").exists())
+            if(QFile(folderName + filename+".wav").exists())
             {
+                QVector<double> x(1280), y(1280);
+                model->getSound()->initPlotVectors(x, y, folderName + filename);
 
-                msgBox.setText("in extract waveform!");
-                msgBox.exec() ;
-                model->getSound()->extractWaveform(folderName + filename);
-            }
+                QCustomPlot* qCPsoundSignal = ((MainWindow*)qWidgetMainWindow)->getQCPsoundSignal();
+                qCPsoundSignal->graph(0)->setData(x, y);
+                qCPsoundSignal->xAxis->setLabel("x");
+                qCPsoundSignal->yAxis->setLabel("y");
+                qCPsoundSignal->xAxis->setRange(0, 1280);
+                qCPsoundSignal->yAxis->setRange(0, 100);
+                qCPsoundSignal->replot();
+             }
         }
         catch(std::exception)
         {
-            msgBox.setText("Cannot create Waveform");
+            msgBox.setText("Cannot init plot vectors");
             msgBox.exec();
         }
-
-        ((MainWindow*)qWidgetMainWindow)->getQSlider()->setStyleSheet("margin-left: -70px; background-color :white; background-image: url("+folderName + filename+".png); ");
-        model->getSound()->setMedia(folderName + filename+".wav");
-        model->getSound()->setSoundFileToCompare(folderName + filename+".wav");
 
         int nbSeconds = model->getVideo()->getSecFromNbFrame(model->getVideo()->getNumberOfFrames()) ;
         std::stringstream s ;

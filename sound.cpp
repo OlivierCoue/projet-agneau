@@ -14,7 +14,7 @@
 #include <model.h>
 #include <QMessageBox.h>
 #include <QTextCodec.h>
-
+#include <iostream>
 
 Sound::Sound(){
     qMediaPlayer = new QMediaPlayer ;
@@ -28,59 +28,46 @@ void Sound::extractSound(QString filename){
 }
 
 
-void Sound::extractWaveform(QString filename){
-    /* QString cmd = "ffmpeg -i " + filename + ".wav "
-                      "-filter_complex \"aformat=channel_layouts=mono,showwavespic=s=1280x120\" -frames:v 1 " +
-                      filename + ".png" ;
-        system(cmd.toStdString().c_str());*/
+void Sound::initPlotVectors(QVector<double> &x, QVector<double> &y, QString filename){
 
+    int width = 1280;
+    int height = 120;
+    QString fileIn = filename + ".wav";
 
-
-        int width = 1280;
-        int height = 120;
-        QString fileIn = filename + ".wav";
-        QString fileOut = filename + ".png";
-        Aquila::WaveFile wav(fileIn.toStdString());
-        int max = 0;
-        int total = wav.getSamplesCount()/width;
-        std::vector<double> result;
-        double calcul = 0;
-        for(unsigned int i = 0; i < wav.getSamplesCount(); i++){
-            if(i%total == total - 1)
-            {
-                result.push_back(calcul/total);
-                if(calcul/total > max)
-                    max = calcul/total;
-                calcul = 0;
-            }
-            else
-            {
-                calcul += qAbs(wav.sample(i));
-            }
-        }
-        QImage image(width,height,QImage::Format_ARGB32);
-        image.fill(Qt::transparent);
-        QPainter paint;
-        paint.begin(&image);
-        paint.setPen(QColor(255, 0, 0));
-        for(unsigned int i = 0; i < result.size(); i++)
+    Aquila::WaveFile wav(fileIn.toStdString());
+    int max = 0;
+    int total = wav.getSamplesCount()/width;
+    std::vector<double> result;
+    double calcul = 0;
+    for(unsigned int i = 0; i < wav.getSamplesCount(); i++){
+        if(i%total == total - 1)
         {
-            double value;
-            if(max >=  (height/2)){
-                value = result.at(i)*(height/2) / max;
-            }
-            else{
-                value = result.at(i);
-            }
-            if(value >= 0){
-                paint.drawLine(QLineF(QPointF(i, (height/2)), QPointF(i, value + (height/2))));
-                paint.drawLine(QLineF(QPointF(i, (height/2)), QPointF(i, (height/2) - value)));
-            }
-
+            result.push_back(calcul/total);
+            if(calcul/total > max)
+                max = calcul/total;
+            calcul = 0;
         }
+        else
+        {
+            calcul += qAbs(wav.sample(i));
+        }
+    }
 
-        paint.end();
-        image.save(fileOut);
+    for(unsigned int i = 0; i < result.size(); i++)
+    {
+        double value;
+        if(max >=  (height/2)){
+            value = result.at(i)*(height/2) / max;
+        }
+        else{
+            value = result.at(i);
+        }
+        if(value >= 0){
+            x[i] = i;
+            y[i] = value;
+        }
+    }
+
 }
 
 void Sound::setMedia(QString filename){

@@ -74,6 +74,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent){
     qPushButtonEnd = new QPushButton(">>|") ;
     qPushButtonStart = new QPushButton("|<<") ;
 
+    // sound signal plot
+    qHBoxLayoutSound = new QHBoxLayout();
+    qCPsoundSignal = new QCustomPlot();
+    /////
+
     qHBoxLayoutExtraction = new QHBoxLayout ;
     qHBoxLayoutExtraction->setAlignment(Qt::AlignCenter) ;
     qPushButtonStartVideoToExtract = new QPushButton("Début extraction") ;
@@ -140,6 +145,13 @@ void MainWindow::init(){
     qHBoxLayoutTrajectory->addWidget(qLabelTrajectory);
     qHBoxLayoutTrajectory->addWidget(qCheckBox);
     qVBoxLayout->addLayout(qHBoxLayoutTrajectory);
+
+    // sound signal plot
+    qCPsoundSignal->addGraph();
+    qCPsoundSignal->setFixedHeight(120);
+    qHBoxLayoutSound->addWidget(qCPsoundSignal);
+    qVBoxLayout->addLayout(qHBoxLayoutSound);
+    ///
 
     qHBoxLayoutVideoControl->addWidget(qPushButtonStart);
     qHBoxLayoutVideoControl->addWidget(qPushButtonFastBackward);
@@ -217,6 +229,8 @@ void MainWindow::setQLabelFinishTime(QString q){qLabelTimestampFinish->setText(q
 void MainWindow::setQLabelStartVideoToExtract(QString q){qLabelStartVideoToExtract->setText(q);}
 void MainWindow::setQLabelEndVideoToExtract(QString q){qLabelEndVideoToExtract->setText(q);}
 
+QCustomPlot* MainWindow::getQCPsoundSignal(){return qCPsoundSignal ;}
+
 void MainWindow::displayImageQLabelVideo(QImage img){
     qLabelVideoDisplay->setPixmap(QPixmap::fromImage(img).scaled(qLabelVideoDisplay->size(),Qt::KeepAspectRatio, Qt::FastTransformation));
     qLabelVideoDisplay->adjustSize();
@@ -276,6 +290,9 @@ MainWindow::~MainWindow(){
     delete qActionShiftMax;
     delete qActionQuit;
     delete qActionOpenVideo;
+
+    delete qCPsoundSignal;
+    delete qHBoxLayoutSound;
 
     delete qMenueTools ;
     delete qMenueAlgorithms ;

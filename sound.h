@@ -28,7 +28,7 @@ class Sound{
         Sound();
         ~Sound();
         void extractSound(QString filename) ;
-        void extractWaveform(QString filename) ;
+        void initPlotVectors(QVector<double> &x, QVector<double> &y, QString filename) ;
         static void audio_encode(const char *filename);
         void setMedia(QString filename) ;
         void play() ;
