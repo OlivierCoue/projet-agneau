@@ -62,9 +62,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent){
 
     qHBoxLayoutSlider = new QHBoxLayout ;
     qSlider = new QSlider(Qt::Horizontal) ;
-    qSlider->setFixedHeight(120);
+    /*qSlider->setFixedHeight(120);
     qSlider->setStyleSheet("background-color :white; "
-                           "QSlider::groove::Horizontal{visibility:hidden;}");
+                           "QSlider::groove::Horizontal{visibility:hidden;}");*/
 
     qPushButtonFastBackward = new QPushButton("<<") ;
     qPushButtonFastForward = new QPushButton(">>") ;
@@ -149,9 +149,10 @@ void MainWindow::init(){
     // sound signal plot
     qCPsoundSignal->addGraph();
     qCPsoundSignal->setFixedHeight(120);
+    qCPsoundSignal->setFixedWidth(1230);
     qHBoxLayoutSound->addWidget(qCPsoundSignal);
     qVBoxLayout->addLayout(qHBoxLayoutSound);
-    ///
+    //
 
     qHBoxLayoutVideoControl->addWidget(qPushButtonStart);
     qHBoxLayoutVideoControl->addWidget(qPushButtonFastBackward);

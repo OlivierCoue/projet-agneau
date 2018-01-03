@@ -142,23 +142,20 @@ void Controller::openVideoFile(){
         try {
             if(QFile(folderName + filename+".wav").exists())
             {
-                QVector<double> x(1280), y(1280);
-                model->getSound()->initPlotVectors(x, y, folderName + filename);
-
-                QCustomPlot* qCPsoundSignal = ((MainWindow*)qWidgetMainWindow)->getQCPsoundSignal();
-                qCPsoundSignal->graph(0)->setData(x, y);
-                qCPsoundSignal->xAxis->setLabel("x");
-                qCPsoundSignal->yAxis->setLabel("y");
-                qCPsoundSignal->xAxis->setRange(0, 1280);
-                qCPsoundSignal->yAxis->setRange(0, 100);
-                qCPsoundSignal->replot();
-             }
+                model->getSound()->initPlotVectors(*((MainWindow*)qWidgetMainWindow)->getQCPsoundSignal(), folderName + filename);
+            }
+            else {
+                ((MainWindow*)qWidgetMainWindow)->getQCPsoundSignal()->clearGraphs();
+                ((MainWindow*)qWidgetMainWindow)->getQCPsoundSignal()->replot();
+            }
         }
         catch(std::exception)
         {
             msgBox.setText("Cannot init plot vectors");
             msgBox.exec();
         }
+
+        model->getSound()->setMedia(folderName + filename+".wav");
 
         int nbSeconds = model->getVideo()->getSecFromNbFrame(model->getVideo()->getNumberOfFrames()) ;
         std::stringstream s ;

@@ -27,16 +27,19 @@ void Sound::extractSound(QString filename){
     gestionExtractAudio.extractAudio(fileAudio);
 }
 
+void Sound::initPlotVectors(QCustomPlot & qCPsoundSignal, QString filename){
 
-void Sound::initPlotVectors(QVector<double> &x, QVector<double> &y, QString filename){
-
-    int width = 1280;
+    int width = 1220;
     int height = 120;
+
+    QVector<double> x(1220), y(1220);
+
+
     QString fileIn = filename + ".wav";
 
     Aquila::WaveFile wav(fileIn.toStdString());
     int max = 0;
-    int total = wav.getSamplesCount()/width;
+    int total = wav.getSamplesCount() / width;
     std::vector<double> result;
     double calcul = 0;
     for(unsigned int i = 0; i < wav.getSamplesCount(); i++){
@@ -53,10 +56,12 @@ void Sound::initPlotVectors(QVector<double> &x, QVector<double> &y, QString file
         }
     }
 
+    double maxY = 0;
+
     for(unsigned int i = 0; i < result.size(); i++)
     {
         double value;
-        if(max >=  (height/2)){
+        if(max >= (height/2)){
             value = result.at(i)*(height/2) / max;
         }
         else{
@@ -65,8 +70,18 @@ void Sound::initPlotVectors(QVector<double> &x, QVector<double> &y, QString file
         if(value >= 0){
             x[i] = i;
             y[i] = value;
+
+            if (value > maxY) {
+                maxY = value;
+            }
         }
     }
+
+    qCPsoundSignal.graph(0)->setData(x, y);
+    qCPsoundSignal.xAxis->setRange(0, width);
+    qCPsoundSignal.yAxis->setRange(0, maxY);
+    qCPsoundSignal.setInteractions(QCP::iRangeZoom | QCP::iRangeDrag);
+    qCPsoundSignal.replot();
 
 }
 
@@ -74,6 +89,7 @@ void Sound::setMedia(QString filename){
     qMediaPlayer->setMedia(QUrl::fromLocalFile(filename));
     qMediaPlayer->setVolume(100);
 }
+
 void Sound::play(){qMediaPlayer->play();}
 void Sound::pause(){qMediaPlayer->pause();}
 void Sound::stop(){qMediaPlayer->stop();}
