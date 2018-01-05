@@ -7,6 +7,7 @@
 #include <fstream>
 #include <QDebug>
 #include <QMediaPlayer>
+#include "QCustomPlot/qcustomplot.h"
 
 class Sound{
     private:
@@ -28,7 +29,7 @@ class Sound{
         Sound();
         ~Sound();
         void extractSound(QString filename) ;
-        void initPlotVectors(QVector<double> &x, QVector<double> &y, QString filename) ;
+        void initPlotVectors(QCustomPlot & qCPsoundSignal, QString filename);
         static void audio_encode(const char *filename);
         void setMedia(QString filename) ;
         void play() ;
