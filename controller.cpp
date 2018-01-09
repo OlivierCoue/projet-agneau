@@ -68,6 +68,8 @@ Controller::Controller(Model *model, View *view){
     QObject::connect( ((MainWindow*)qWidgetMainWindow)->getQRadioButtonTreatment(), SIGNAL(clicked(bool)), this, SLOT(treatmentChecked()) );
     QObject::connect( ((MainWindow*)qWidgetMainWindow)->getQRadioButtonVisualize(), SIGNAL(clicked(bool)), this, SLOT(visualizeChecked()) );
 
+    QObject::connect( ((MainWindow*)qWidgetMainWindow)->getQCPsoundSignal()->xAxis, SIGNAL(rangeChanged(QCPRange)), this, SLOT(onSoundXRangeChanged(QCPRange)) );
+    QObject::connect( ((MainWindow*)qWidgetMainWindow)->getQCPsoundSignal()->yAxis, SIGNAL(rangeChanged(QCPRange)), this, SLOT(onSoundYRangeChanged(QCPRange)) );
 
     QObject::connect( ((ShiftMaxWindow*)qWidgetShiftMaxWindow)->getQPushButton(), SIGNAL(clicked(bool)), this, SLOT(shitMaxEdited()) ) ;
 
@@ -83,7 +85,6 @@ Controller::Controller(Model *model, View *view){
 
 
     QObject::connect( ((ExtractVideoWindow*)qWidgetExtractVideoWindow)->getQPushButton(), SIGNAL(clicked(bool)), this ,SLOT(extractVideo()) ) ;
-
 
     QObject::connect( model->getVideo(), SIGNAL(processedImage(QImage, int, QString)), this, SLOT(updateVideo(QImage, int, QString)));
     QObject::connect( model->getVideo(), SIGNAL(processedThresholdImage(QImage)), this, SLOT(updateThresholdVideo(QImage)) );
@@ -135,14 +136,16 @@ void Controller::openVideoFile(){
         filename = list.at(0).toStdString().c_str() ;
 
         // update sound signal
-        if(!QFile(folderName + filename+".wav").exists())
+        if(!QFile(folderName + filename+".wav").exists()){
             msgBox.setText("in extract wav file!");
             msgBox.exec() ;
             model->getSound()->extractSound(folderName + filename);
+        }
         try {
             if(QFile(folderName + filename+".wav").exists())
             {
-                model->getSound()->initPlotVectors(*((MainWindow*)qWidgetMainWindow)->getQCPsoundSignal(), folderName + filename);
+                model->getSound()->initPlotVectors(model->getVideo()->getNumberOfFrames(), *((MainWindow*)qWidgetMainWindow)->getQCPsoundSignal(), folderName + filename);
+                model->getSound()->initCursor(*((MainWindow*)qWidgetMainWindow)->getQCPsoundSignal());
             }
             else {
                 ((MainWindow*)qWidgetMainWindow)->getQCPsoundSignal()->clearGraphs();
@@ -215,7 +218,6 @@ void Controller::updateVideo(QImage img, int currentFrame, QString info){
 
     ((MainWindow*)qWidgetMainWindow)->displayImageQLabelVideo(img);
     ((MainWindow*)qWidgetMainWindow)->getQSlider()->setValue(currentFrame);
-
     int nbSeconds = model->getVideo()->getSecFromNbFrame(currentFrame) ;
     std::stringstream s ;
     QString str;
@@ -223,6 +225,8 @@ void Controller::updateVideo(QImage img, int currentFrame, QString info){
     s << str.toStdString();
     //s << nbSeconds/60 << ":" << nbSeconds%60 ;
     ((MainWindow*)qWidgetMainWindow)->setQLabelCurrentTime(QString::fromStdString(s.str()));
+    model->getSound()->updateCursor(currentFrame, *((MainWindow*)qWidgetMainWindow)->getQCPsoundSignal());
+
     if(info != ""){
         QListWidgetItem* qListWidgetItem = new QListWidgetItem(info, ((MainWindow*)qWidgetMainWindow)->getQListWidget());
         ((MainWindow*)qWidgetMainWindow)->getQListWidget()->addItem(qListWidgetItem);
@@ -372,7 +376,6 @@ void Controller::forward(){
 
         ((MainWindow*)qWidgetMainWindow)->setQLabelCurrentTime(QString::fromStdString(s.str()));
         ((MainWindow*)qWidgetMainWindow)->getQSlider()->setValue(model->getVideo()->getCurrentFrameID());
-
     }
 }
 
@@ -672,6 +675,56 @@ void Controller::setEndVideoExtraction(){
 void Controller::extractVideo(){
     model->getVideo()->extractVideo(folderName + filename);
     ((ExtractVideoWindow*)qWidgetExtractVideoWindow)->close() ;
+}
+
+void Controller::onSoundXRangeChanged(const QCPRange &newRange)
+{
+    QCPRange limitRange(0, model->getVideo()->getNumberOfFrames());
+    auto lowerBound = limitRange.lower;
+    auto upperBound = limitRange.upper;
+
+    QCPRange fixedRange(newRange);
+    if (fixedRange.lower < lowerBound)
+    {
+        fixedRange.lower = lowerBound;
+        fixedRange.upper = lowerBound + newRange.size();
+        if (fixedRange.upper > upperBound || qFuzzyCompare(newRange.size(), upperBound-lowerBound))
+            fixedRange.upper = upperBound;
+        ((MainWindow*)qWidgetMainWindow)->getQCPsoundSignal()->xAxis->setRange(fixedRange);
+    } else if (fixedRange.upper > upperBound)
+    {
+        fixedRange.upper = upperBound;
+        fixedRange.lower = upperBound - newRange.size();
+        if (fixedRange.lower < lowerBound || qFuzzyCompare(newRange.size(), upperBound-lowerBound))
+            fixedRange.lower = lowerBound;
+        ((MainWindow*)qWidgetMainWindow)->getQCPsoundSignal()->xAxis->setRange(fixedRange);
+    }
+    ((MainWindow*)qWidgetMainWindow)->getQCPsoundSignal()->xAxis->setRange(fixedRange);
+}
+
+void Controller::onSoundYRangeChanged(const QCPRange &newRange)
+{
+    QCPRange limitRange(0, 60);
+    auto lowerBound = limitRange.lower;
+    auto upperBound = limitRange.upper;
+
+    QCPRange fixedRange(newRange);
+    if (fixedRange.lower < lowerBound)
+    {
+        fixedRange.lower = lowerBound;
+        fixedRange.upper = lowerBound + newRange.size();
+        if (fixedRange.upper > upperBound || qFuzzyCompare(newRange.size(), upperBound-lowerBound))
+            fixedRange.upper = upperBound;
+        ((MainWindow*)qWidgetMainWindow)->getQCPsoundSignal()->yAxis->setRange(fixedRange);
+    } else if (fixedRange.upper > upperBound)
+    {
+        fixedRange.upper = upperBound;
+        fixedRange.lower = upperBound - newRange.size();
+        if (fixedRange.lower < lowerBound || qFuzzyCompare(newRange.size(), upperBound-lowerBound))
+            fixedRange.lower = lowerBound;
+        ((MainWindow*)qWidgetMainWindow)->getQCPsoundSignal()->yAxis->setRange(fixedRange);
+    }
+    ((MainWindow*)qWidgetMainWindow)->getQCPsoundSignal()->yAxis->setRange(fixedRange);
 }
 
 Controller::~Controller(){

@@ -25,11 +25,15 @@ class Sound{
         QString resultSoundFile_4 ;
 
         QMediaPlayer* qMediaPlayer ;
+
+        QCPItemLine* item;
     public:
         Sound();
         ~Sound();
         void extractSound(QString filename) ;
-        void initPlotVectors(QCustomPlot & qCPsoundSignal, QString filename);
+        void initPlotVectors(int frameCount, QCustomPlot & qCPsoundSignal, QString filename);
+        void initCursor(QCustomPlot & qCPsoundSignal);
+        void updateCursor(int value, QCustomPlot & qCPsoundSignal);
         static void audio_encode(const char *filename);
         void setMedia(QString filename) ;
         void play() ;

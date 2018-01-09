@@ -88,6 +88,8 @@ class Controller : QObject{
         void extractVideo() ;
         void setStartVideoExtraction() ;
         void setEndVideoExtraction() ;
+        void onSoundXRangeChanged(const QCPRange &range);
+        void onSoundYRangeChanged(const QCPRange &range);
 
 
 };

@@ -27,12 +27,12 @@ void Sound::extractSound(QString filename){
     gestionExtractAudio.extractAudio(fileAudio);
 }
 
-void Sound::initPlotVectors(QCustomPlot & qCPsoundSignal, QString filename){
+void Sound::initPlotVectors(int frameCount, QCustomPlot & qCPsoundSignal, QString filename){
 
-    int width = 1220;
+    int width = frameCount;
     int height = 120;
 
-    QVector<double> x(1220), y(1220);
+    QVector<double> x(frameCount), y(frameCount);
 
 
     QString fileIn = filename + ".wav";
@@ -83,6 +83,20 @@ void Sound::initPlotVectors(QCustomPlot & qCPsoundSignal, QString filename){
     qCPsoundSignal.setInteractions(QCP::iRangeZoom | QCP::iRangeDrag);
     qCPsoundSignal.replot();
 
+}
+
+void Sound::initCursor(QCustomPlot & qCPsoundSignal){
+    this->item = new QCPItemLine(&qCPsoundSignal);
+    item->setPen(QPen(Qt::red));
+    item->start->setCoords(1,0);
+    item->end->setCoords(1,120);
+    qCPsoundSignal.replot();
+}
+
+void Sound::updateCursor(int value, QCustomPlot & qCPsoundSignal){
+    this->item->start->setCoords(value,0);
+    this->item->end->setCoords(value,120);
+    qCPsoundSignal.replot();
 }
 
 void Sound::setMedia(QString filename){

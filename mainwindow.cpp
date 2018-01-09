@@ -148,6 +148,7 @@ void MainWindow::init(){
 
     // sound signal plot
     qCPsoundSignal->addGraph();
+    qCPsoundSignal->addGraph();
     qCPsoundSignal->setFixedHeight(120);
     qCPsoundSignal->setFixedWidth(1230);
     qHBoxLayoutSound->addWidget(qCPsoundSignal);
@@ -230,7 +231,7 @@ void MainWindow::setQLabelFinishTime(QString q){qLabelTimestampFinish->setText(q
 void MainWindow::setQLabelStartVideoToExtract(QString q){qLabelStartVideoToExtract->setText(q);}
 void MainWindow::setQLabelEndVideoToExtract(QString q){qLabelEndVideoToExtract->setText(q);}
 
-QCustomPlot* MainWindow::getQCPsoundSignal(){return qCPsoundSignal ;}
+QCustomPlot* MainWindow::getQCPsoundSignal(){ return qCPsoundSignal ;}
 
 void MainWindow::displayImageQLabelVideo(QImage img){
     qLabelVideoDisplay->setPixmap(QPixmap::fromImage(img).scaled(qLabelVideoDisplay->size(),Qt::KeepAspectRatio, Qt::FastTransformation));
